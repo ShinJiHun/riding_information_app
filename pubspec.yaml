@@ -1,6 +1,6 @@
 name: riding_information_app
 description: "A new Flutter project."
-publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+publish_to: 'none'
 
 version: 1.0.0+1
 
@@ -10,17 +10,45 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-
   cupertino_icons: ^1.0.8
   get: ^4.1.4
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-
   flutter_lints: ^5.0.0
+  flutter_launcher_icons: ^0.14.4
 
 flutter:
   uses-material-design: true
   assets:
     - assets/image/
+  fonts:
+    - family: NotoSansKR
+      fonts:
+        - asset: assets/font/NotoSansKR-VariableFont_wght.ttf
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+
+  web:
+    generate: true
+    image_path: assets/image/icon.png
+    background_color: "#22C55E"
+    theme_color: "#22C55E"
+
+  windows:
+    generate: true
+    image_path: assets/image/icon.png
+    icon_size: 256
+
+  macos:
+    generate: true
+    image_path: assets/image/icon.png
+
+  image_path: assets/image/icon.png
+
+  remove_alpha_ios: true
+  adaptive_icon_background: "#22C55E"
+

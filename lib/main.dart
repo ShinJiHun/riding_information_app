@@ -12,8 +12,9 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
-      navigatorKey: Get.key, // contextless navigation용
+      navigatorKey: Get.key,
       debugShowCheckedModeBanner: false,
+      theme: ThemeData(fontFamily: 'NotoSansKR'),
       home: const LendingPage(),
     );
   }
