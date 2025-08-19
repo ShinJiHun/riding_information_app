@@ -1,71 +1,53 @@
 import 'package:flutter/material.dart';
 import 'package:riding_information_app/mainpages/homescreen.dart';
-import 'package:riding_information_app/mainpages/mylikescreen.dart';
-import 'package:riding_information_app/mainpages/showgridscreen.dart';
-import 'package:riding_information_app/mainpages/myscreen.dart';
 
 class MainPage extends StatefulWidget {
+  const MainPage({super.key});
+
   @override
-  _MainPageState createState() => _MainPageState();
+  State<MainPage> createState() => _MainPageState();
 }
 
 class _MainPageState extends State<MainPage> {
-  int _selectedIndex = 0;
+  int _index = 0;
 
-  // ✅ items 리스트를 별도로 정의
-  final List<BottomNavigationBarItem> bottomItems = const [
-    BottomNavigationBarItem(label: '', icon: Icon(Icons.home)),
-    BottomNavigationBarItem(label: '모아보기', icon: Icon(Icons.grid_view)),
-    BottomNavigationBarItem(label: '내가 라이크 누른 컨텐츠', icon: Icon(Icons.favorite)),
-    BottomNavigationBarItem(label: '내 페이지', icon: Icon(Icons.account_circle)),
-  ];
-
-  final List<Widget> pages = [
-    HomeScreen(),
-    ShowGridScreen(),
-    MyLikeScreen(),
-    MyScreen(),
+  final List<Widget> _pages = [
+    const HomeScreen(),
+    const _PlaceholderPage(title: 'Grid'),
+    const _PlaceholderPage(title: 'Likes'),
+    const _PlaceholderPage(title: 'My'),
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          '라이딩그램',
-          style: TextStyle(
-            fontFamily: 'NotoSansKR',
-            fontSize: 30,
-            color: Colors.black,
-          ),
-        ),
+        title: const Text('RidingInformation'),
         centerTitle: true,
-        backgroundColor: Colors.white,
-        elevation: 3,
-        automaticallyImplyLeading: false,
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(1.0),
-          child: Container(
-            color: Colors.grey.withOpacity(0.4),
-            height: 1.0,
-          ),
-        ),
       ),
-
-      // ✅ Scaffold의 속성으로 둬야 함
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        backgroundColor: Colors.white,
-        selectedItemColor: Colors.black,
-        unselectedItemColor: Colors.grey.withOpacity(0.6),
-        selectedFontSize: 16,   // 글자 크기 조절
-        unselectedFontSize: 12,
-        currentIndex: _selectedIndex,
-        onTap: (index) => setState(() => _selectedIndex = index),
-        items: bottomItems,
+      body: _pages[_index],
+      bottomNavigationBar: NavigationBar(
+        selectedIndex: _index,
+        onDestinationSelected: (i) => setState(() => _index = i),
+        destinations: const [
+          NavigationDestination(icon: Icon(Icons.home_outlined), selectedIcon: Icon(Icons.home), label: 'Home'),
+          NavigationDestination(icon: Icon(Icons.grid_on_outlined), selectedIcon: Icon(Icons.grid_on), label: 'Grid'),
+          NavigationDestination(icon: Icon(Icons.favorite_border), selectedIcon: Icon(Icons.favorite), label: 'Likes'),
+          NavigationDestination(icon: Icon(Icons.person_outline), selectedIcon: Icon(Icons.person), label: 'My'),
+        ],
       ),
+    );
+  }
+}
 
-      body: pages[_selectedIndex],
+class _PlaceholderPage extends StatelessWidget {
+  final String title;
+  const _PlaceholderPage({required this.title});
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Text(title, style: Theme.of(context).textTheme.headlineMedium),
     );
   }
 }

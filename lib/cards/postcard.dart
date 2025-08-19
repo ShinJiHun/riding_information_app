@@ -2,108 +2,127 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 
-class PostCard extends StatefulWidget {
-  final int number; // ← final + non-nullable
+import '../models/Post.dart';
 
-  const PostCard({
-    super.key,
-    required this.number, // ← required
-  });
+class PostCard extends StatelessWidget {
+  final Post post;
+  const PostCard({super.key, required this.post});
 
   @override
-  State<PostCard> createState() => _PostCardState();
+  Widget build(BuildContext context) {
+    return Card(
+      margin: const EdgeInsets.symmetric(horizontal: 12),
+      elevation: 0,
+      clipBehavior: Clip.antiAlias,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _Header(userName: post.userName, avatarUrl: post.userAvatarUrl, location: post.location),
+          _Image(imageUrl: post.imageUrl),
+          const SizedBox(height: 8),
+          const _ActionRow(),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('${post.likes} likes', style: Theme.of(context).textTheme.bodyMedium),
+                const SizedBox(height: 6),
+                RichText(
+                  text: TextSpan(
+                    style: Theme.of(context).textTheme.bodyMedium,
+                    children: [
+                      TextSpan(text: post.userName, style: const TextStyle(fontWeight: FontWeight.w700)),
+                      const TextSpan(text: '  '),
+                      TextSpan(text: post.caption),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 10),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }
 
-class _PostCardState extends State<PostCard> {
-  List<String> testImageList = [
-    'https://images.pexels.com/photos/1973270/pexels-photo-1973270.jpeg',
-    'https://images.pexels.com/photos/161709/newborn-baby-feet-basket-161709.jpeg',
-    'https://images.pexels.com/photos/265987/pexels-photo-265987.jpeg',
-    'https://images.pexels.com/photos/459957/pexels-photo-459957.jpeg',
-    'https://images.pexels.com/photos/1648377/pexels-photo-1648377.jpeg',
-  ];
+
+class _Header extends StatelessWidget {
+  final String userName;
+  final String avatarUrl;
+  final String location;
+  const _Header({required this.userName, required this.avatarUrl, required this.location});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      child: Column(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 10),
-            height: 50,
-            width: MediaQuery.of(context).size.width,
-            color: Colors.grey,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
-                  children: [
-                    CircleAvatar(
-                      radius: 20,
-                      backgroundImage: NetworkImage(
-                        'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS8JqDxQ1c8-RQTLvh_1XN5pNKYwCT5rt5TBQ&s',
-                      ),
-                    ),
-                    SizedBox(width : 5),
-                    Text('100sucoding', style: TextStyle(fontSize: 20))
-                  ],
-                ),
-                Icon(Icons.subject),
-              ],
-            ),
+          Row(
+            children: [
+              CircleAvatar(radius: 20, backgroundImage: NetworkImage(avatarUrl)),
+              const SizedBox(width: 10),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(userName, style: const TextStyle(fontWeight: FontWeight.w700)),
+                  Text(location, style: Theme.of(context).textTheme.bodySmall),
+                ],
+              ),
+            ],
           ),
-          Container(
-            height: 435,
-            width: MediaQuery.of(context).size.width,
-            color: Colors.white,
-            child: Image.network(testImageList[Random().nextInt(5)]),
+          IconButton(
+            icon: const Icon(Icons.more_horiz),
+            onPressed: () {},
           ),
-          Container(
-            height: 50,
-            width: double.infinity,
-            padding: const EdgeInsets.symmetric(horizontal: 10),
-            color: Colors.red, // 원하는 색으로
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                // 왼쪽 아이콘 묶음
-                Row(
-                  children: const [
-                    Icon(Icons.favorite_border),
-                    SizedBox(width: 7),
-                    Icon(Icons.chat_outlined),
-                    SizedBox(width: 7),
-                    Icon(Icons.send),
-                  ],
-                ),
+        ],
+      ),
+    );
+  }
+}
 
-                // 가운데 텍스트(인디케이터)
-                const Text('indic'),
+class _Image extends StatelessWidget {
+  final String imageUrl;
+  const _Image({required this.imageUrl});
 
-                // 오른쪽 북마크
-                const Icon(Icons.bookmark_border),
-              ],
-            ),
+  @override
+  Widget build(BuildContext context) {
+    return AspectRatio(
+      aspectRatio: 1,
+      child: Ink.image(
+        image: NetworkImage(imageUrl),
+        fit: BoxFit.cover,
+        child: InkWell(onTap: () {}),
+      ),
+    );
+  }
+}
+
+class _ActionRow extends StatelessWidget {
+  const _ActionRow();
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 50,
+      width: MediaQuery.of(context).size.width,
+      color: Colors.transparent,
+      padding: const EdgeInsets.symmetric(horizontal: 8),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Row(
+            children: [
+              IconButton(onPressed: () {}, icon: const Icon(Icons.favorite_border)),
+              IconButton(onPressed: () {}, icon: const Icon(Icons.chat_outlined)),
+              IconButton(onPressed: () {}, icon: const Icon(Icons.send)),
+            ],
           ),
-          Container(
-            height: 20,
-            width: MediaQuery.of(context).size.width,
-            color: Colors.green,
-            child: Center(child: Text('좋아요 칸')),
-          ),
-          Container(
-            height: 50,
-            width: MediaQuery.of(context).size.width,
-            color: Colors.blue,
-            child: Center(child: Text('포스트 설명 칸')),
-          ),
-          Container(
-            height: 30,
-            width: MediaQuery.of(context).size.width,
-            color: Colors.orange,
-            child: Center(child: Text('댓글 칸')),
-          ),
+          IconButton(onPressed: () {}, icon: const Icon(Icons.bookmark_border)),
         ],
       ),
     );
