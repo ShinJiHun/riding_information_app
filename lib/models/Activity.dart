@@ -1,28 +1,31 @@
 class Activity {
+  final int id;
   final String date;
   final String device;
   final String title;
   final String content;
-  final String? polyline;      // <- 추가: Google Encoded Polyline
-  final String? staticMapUrl;  // <- (선택) 서버에서 바로 URL을 주면 사용
+  final String? polyline;
+  final String? mapUrl;
 
   Activity({
+    required this.id,
     required this.date,
     required this.device,
     required this.title,
     required this.content,
     this.polyline,
-    this.staticMapUrl,
+    this.mapUrl,
   });
 
   factory Activity.fromJson(Map<String, dynamic> json) {
     return Activity(
-      date: json['date'] ?? '',
+      id: json['id'] as int,
+      title: json['activityTitle'] ?? '',
+      content: json['activityContent'] ?? '',
+      date: json['activityDate'] ?? '',
       device: json['device'] ?? '',
-      title: json['title'] ?? '',
-      content: json['content'] ?? '',
-      polyline: json['polyline'],
-      staticMapUrl: json['staticMapUrl'],
+      mapUrl: json['mapUrl'],
+      polyline: json['polyline'], // ✅ 서버가 내려주면 여기서 세팅
     );
   }
 }

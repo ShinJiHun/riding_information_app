@@ -14,7 +14,6 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   static const String _apiBase = 'http://localhost:8085';
-  static const String _staticMapBase = 'http://localhost:8085/maps/static';
 
   List<Activity> activities = [];
   bool loading = true;
@@ -33,8 +32,12 @@ class _HomeScreenState extends State<HomeScreen> {
 
       if (response.statusCode == 200) {
         final List<dynamic> data = json.decode(response.body);
+
+        // 필요하면 최신순 정렬 (date 포맷이 ISO라면 DateTime.parse로 바꿔서 정렬)
+        final list = data.map((e) => Activity.fromJson(e)).toList();
+
         setState(() {
-          activities = data.map((e) => Activity.fromJson(e)).toList();
+          activities = list;
           loading = false;
         });
       } else {
@@ -68,11 +71,15 @@ class _HomeScreenState extends State<HomeScreen> {
         separatorBuilder: (_, __) => const SizedBox(height: 12),
         itemBuilder: (context, i) {
           final a = activities[i];
-          final heroTag = 'activity_${i}_${a.title.hashCode}';
+
+          // id가 있으면 id 기반, 없으면 안전한 fallback
+          final heroTag = a.id != null
+              ? 'activity_${a.id}'
+              : 'activity_${i}_${a.title.hashCode}';
+
           return ActivityCard(
             activity: a,
-            staticMapBaseUrl: _staticMapBase,
-            heroTag: heroTag,
+            heroTag: heroTag, // ← staticMapBaseUrl 제거
           );
         },
       ),
