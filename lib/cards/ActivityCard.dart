@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import '../models/activity.dart';
 import 'package:riding_information_app/cards/ActivityDetailPage.dart';
-import '../cards//polyline_preview.dart'; // ← 추가
 
-class ActivityCard extends StatelessWidget {
+class ActivityCard extends StatefulWidget {
   final Activity activity;
   final String heroTag;
 
@@ -14,7 +14,18 @@ class ActivityCard extends StatelessWidget {
   });
 
   @override
+  State<ActivityCard> createState() => _ActivityCardState();
+}
+
+class _ActivityCardState extends State<ActivityCard> {
+  bool isExpanded = false;
+  final int previewLength = 50; // 특정 글자수 (예: 50자 이상이면 잘라서 보여줌)
+
+  @override
   Widget build(BuildContext context) {
+    final String content = widget.activity.content;
+    final bool isLongText = content.length > previewLength;
+
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       elevation: 0,
@@ -24,8 +35,8 @@ class ActivityCard extends StatelessWidget {
         onTap: () {
           Navigator.of(context).push(MaterialPageRoute(
             builder: (_) => ActivityDetailPage(
-              activity: activity,
-              heroTag: heroTag,
+              activity: widget.activity,
+              heroTag: widget.heroTag,
             ),
           ));
         },
@@ -34,39 +45,74 @@ class ActivityCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              // 날짜 & 기기
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(activity.date, style: Theme.of(context).textTheme.bodySmall),
-                  Text(activity.device, style: Theme.of(context).textTheme.bodySmall),
+                  Text(widget.activity.date,
+                      style: Theme.of(context).textTheme.bodySmall),
+                  Text(widget.activity.device,
+                      style: Theme.of(context).textTheme.bodySmall),
                 ],
               ),
               const SizedBox(height: 8),
 
-              Text(activity.title,
-                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+              // 제목
+              Text(widget.activity.title,
+                  style: const TextStyle(
+                      fontSize: 18, fontWeight: FontWeight.bold)),
               const SizedBox(height: 8),
 
-              Text(activity.content, style: Theme.of(context).textTheme.bodyMedium),
+              // 본문 (접기/펼치기 기능)
+              Text(
+                isExpanded || !isLongText
+                    ? content
+                    : content.substring(0, previewLength) + "...",
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
+
+              if (isLongText)
+                TextButton(
+                  onPressed: () {
+                    setState(() {
+                      isExpanded = !isExpanded;
+                    });
+                  },
+                  child: Text(isExpanded ? "접기" : "더보기"),
+                ),
+
               const SizedBox(height: 12),
 
-              Hero(
-                tag: heroTag,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(12),
-                  child: AspectRatio(
-                    aspectRatio: 16 / 9,
-                    child: PolylinePreview(
-                      encodedPolyline: activity.polyline,     // ← 모델에 폴리라인 문자열
-                      strokeWidth: 3,
-                      strokeColor: Colors.indigo.shade700,
-                      backgroundColor: Colors.grey.shade100,
-                      padding: const EdgeInsets.all(16),
-                      drawStartEnd: true,
+              // Google Map Preview
+              if (widget.activity.startLatLng != null)
+                Hero(
+                  tag: widget.heroTag,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(12),
+                    child: AspectRatio(
+                      aspectRatio: 16 / 9,
+                      child: GoogleMap(
+                        initialCameraPosition: CameraPosition(
+                          target: widget.activity.startLatLng ?? const LatLng(37.5665, 126.9780), // 서울 기본 좌표 fallback
+                          zoom: 12,
+                        ),
+                        polylines: {
+                          Polyline(
+                            polylineId: const PolylineId("route"),
+                            color: Colors.indigo,
+                            width: 3,
+                            points: widget.activity.decodedPolylinePoints,
+                          ),
+                        },
+                        zoomControlsEnabled: false,
+                        myLocationButtonEnabled: false,
+                        rotateGesturesEnabled: false,
+                        scrollGesturesEnabled: false,
+                        tiltGesturesEnabled: false,
+                      ),
                     ),
                   ),
                 ),
-              ),
             ],
           ),
         ),

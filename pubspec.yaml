@@ -12,11 +12,11 @@ dependencies:
     sdk: flutter
   cupertino_icons: ^1.0.8
   get: ^4.1.4
-  http: ^1.2.2   # ✅ 추가
-  google_maps_flutter: ^2.9.0
-  flutter_map: ^6.0.0
-  latlong2: ^0.9.0
-  flutter_polyline_points: ^2.0.0   # (Google Encoded Polyline 디코딩용)
+  http: ^1.2.2   # ✅ API 호출
+  google_maps_flutter: ^2.9.0  # ✅ 구글 지도
+  flutter_polyline_points: ^2.0.0   # ✅ 구글 인코딩 polyline decode
+  flutter_map: ^6.0.0   # (선택) OSM 지도
+  latlong2: ^0.9.0      # (flutter_map 좌표 타입용)
 
 dev_dependencies:
   flutter_test:
@@ -56,4 +56,3 @@ flutter_launcher_icons:
 
   remove_alpha_ios: true
   adaptive_icon_background: "#22C55E"
-
